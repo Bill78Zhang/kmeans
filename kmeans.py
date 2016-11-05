@@ -7,10 +7,17 @@ Created on Mon Oct 10 10:51:31 2016
 Implementation of k-means algorithm that is the most popular heuristic for solving the k-means problem.
 
 This algorithm is tested on several datasets:
-    - Iris dataset
-    - 
-    -
-In the following, by "points" means "data".
+    - Iris flower dataset
+    - The MNIST database of handwritten digits
+    - Set of data generated randomly according to several probability distribution. These data could be difficult to distinguish if real clusters overlap
+    
+In the following, "points" means "data".
+
+Some measurements help to evaluate clustering :
+    - Numbers of sample in each cluster obtained compered to real number of sample in each cluster (if the ground truth is known)
+    - Error rates : division of number of data attributed to wrong cluster by total number of data (if the ground truth is known)
+
+
     
 References:
 
@@ -203,6 +210,21 @@ def main():
     for cluster in clusters:
         print(len(cluster))
     
+    
+    from sklearn.datasets import load_digits
+    dataset = load_digits()
+    data = dataset['data']
+    points = []
+    for i  in range (data.shape[0]):
+        points.append(data[i].tolist())
+        
+    
+    max_iter = 100
+    k = 10
+    centroids = Forgy_initialization(points,k)
+    C, clusters = kMeans(centroids,points,max_iter)
+    for cluster in clusters:
+        print(len(cluster))
         
 if __name__ == "__main__":
     main()            
