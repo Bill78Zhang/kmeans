@@ -31,6 +31,8 @@ import distance
 import sys
 import io2
 from math import sqrt
+import numpy as np
+from matplotlib import pyplot as plt
 
 def affectation(centroids, points):
     """
@@ -210,19 +212,42 @@ def main():
     for cluster in clusters:
         print(len(cluster))
     
-    
+    # Test on MNIST dataset
     from sklearn.datasets import load_digits
     dataset = load_digits()
     data = dataset['data']
     points = []
     for i  in range (data.shape[0]):
         points.append(data[i].tolist())
-        
+    
     
     max_iter = 100
     k = 10
     centroids = Forgy_initialization(points,k)
     C, clusters = kMeans(centroids,points,max_iter)
+    
+    for cluster in clusters:
+        print(len(cluster))
+
+
+    np.random.seed(4711)  # for repeatability of this tutorial
+    a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[100,])
+    b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[50,])  
+    c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[200,])
+    d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[200,])
+    e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[200,])
+    X2 = np.concatenate((a,b, c, d, e),)
+    plt.scatter(X2[:,0], X2[:,1])
+    plt.show()    
+
+    points = X2.tolist()    
+
+        
+    max_iter = 100
+    k = 5
+    centroids = Forgy_initialization(points,k)
+    C, clusters = kMeans(centroids,points,max_iter)
+    
     for cluster in clusters:
         print(len(cluster))
         
