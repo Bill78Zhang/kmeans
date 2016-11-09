@@ -233,10 +233,37 @@ def main():
     np.random.seed(4711)  # for repeatability of this tutorial
     a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
     b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[20,])  
-    c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
-    d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
+    # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
+    # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
+    # e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[20,])
+    # X2 = np.concatenate((a,b, c, d, e),)
+    X2 = np.concatenate((a,b),)
+    # plt.scatter(X2[:,0], X2[:,1])
+    # plt.show()    
+    a = a.tolist()
+    b = b.tolist()
+    points = X2.tolist()    
+    
+    points_labels = []
+    for i in a:
+        points_labels.append(('a',i))
+        
+    for j in b:
+        points_labels.append(('b',j))    
+        
+    max_iter = 100
+    k = 2
+    centroids = Forgy_initialization(points,k)
+    C, clusters = kMeans(centroids,points,max_iter)
+    
+    for cluster in clusters:
+        print(len(cluster))
+    # a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
+    b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[20,])  
+    # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
+    # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
     e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[20,])
-    X2 = np.concatenate((a,b, c, d, e),)
+    X2 = np.concatenate((b, e),)
     # plt.scatter(X2[:,0], X2[:,1])
     # plt.show()    
 
@@ -244,13 +271,12 @@ def main():
 
         
     max_iter = 100
-    k = 5
+    k = 2
     centroids = Forgy_initialization(points,k)
     C, clusters = kMeans(centroids,points,max_iter)
     
     for cluster in clusters:
         print(len(cluster))
-    
 
     print("end")    
 if __name__ == "__main__":
