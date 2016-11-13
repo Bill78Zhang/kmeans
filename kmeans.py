@@ -25,7 +25,7 @@ References:
                  Tapas Kanungo, David M. Mount ,Nathan S. Netanyahu, Christine D. Piatko,	Ruth Silverman, Angela Y. Wu    
 
 """
-
+import time
 import random
 import distance
 import sys
@@ -33,6 +33,10 @@ import io2
 from math import sqrt
 import numpy as np
 from matplotlib import pyplot as plt
+
+global counter 
+
+counter = 0
 
 def affectation(centroids, points):
     """
@@ -139,8 +143,9 @@ def kMeans(ini_centroids, points, max_iter):
     
     """
     centroids = ini_centroids[:]
-    for i in range (max_iter):     
-        
+    for i in range (max_iter): 
+        global counter
+        counter += 1
         clusters = affectation(centroids, points)
         previous_centroids = centroids[:]
         centroids = new_centroids(clusters)
@@ -201,84 +206,95 @@ def main():
     # for example, sys.argv[1] could be "iris.data.txt"
     arg =  sys.argv[1] 
     #arg =  "iris.data.txt"
+    
+    if arg == "iris.data.txt":
+            
+        # Here we test on IRIS data    
+        # io.py is replaced by io2.py, adapted to the format of "iris.data.txt".     
+        points = io2.read_data(arg, ignore_last_column = True)
+        max_iter = 100
+        k = 3
+        centroids = Forgy_initialization(points,k)
+        t1 = time.clock()
+        C, clusters = kMeans(centroids,points,max_iter)
+        t2 = time.clock()
+        for cluster in clusters:
+            print(len(cluster))
+        print(counter)
+        print(t2 - t1)
         
-    # Here we test on IRIS data    
-    # io.py is replaced by io2.py, adapted to the format of "iris.data.txt".     
-    points = io2.read_data(arg, ignore_last_column = True)
-    max_iter = 10
-    k = 3
-    centroids = Forgy_initialization(points,k)
-    C, clusters = kMeans(centroids,points,max_iter)
-    for cluster in clusters:
-        print(len(cluster))
-    
-    # Test on MNIST dataset
-    from sklearn.datasets import load_digits
-    dataset = load_digits()
-    data = dataset['data']
-    points = []
-    for i  in range (data.shape[0]):
-        points.append(data[i].tolist())
-    
-    
-    max_iter = 100
-    k = 10
-    centroids = Forgy_initialization(points,k)
-    C, clusters = kMeans(centroids,points,max_iter)
-    
-    for cluster in clusters:
-        print(len(cluster))
-
-
-    np.random.seed(4711)  # for repeatability of this tutorial
-    a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
-    b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[20,])  
-    # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
-    # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
-    # e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[20,])
-    # X2 = np.concatenate((a,b, c, d, e),)
-    X2 = np.concatenate((a,b),)
-    # plt.scatter(X2[:,0], X2[:,1])
-    # plt.show()    
-    a = a.tolist()
-    b = b.tolist()
-    points = X2.tolist()    
-    
-    points_labels = []
-    for i in a:
-        points_labels.append(('a',i))
+    elif arg == "MNIST":    
+        # Test on MNIST dataset
+        from sklearn.datasets import load_digits
+        dataset = load_digits()
+        data = dataset['data']
+        points = []
+        for i  in range (data.shape[0]):
+            points.append(data[i].tolist())
         
-    for j in b:
-        points_labels.append(('b',j))    
         
-    max_iter = 100
-    k = 2
-    centroids = Forgy_initialization(points,k)
-    C, clusters = kMeans(centroids,points,max_iter)
-    
-    for cluster in clusters:
-        print(len(cluster))
-    # a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
-    b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[20,])  
-    # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
-    # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
-    e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[20,])
-    X2 = np.concatenate((b, e),)
-    # plt.scatter(X2[:,0], X2[:,1])
-    # plt.show()    
-
-    points = X2.tolist()    
-
+        max_iter = 100
+        k = 10
+        centroids = Forgy_initialization(points,k)
+        t1 = time.clock()        
+        C, clusters = kMeans(centroids,points,max_iter)
+        t2 = time.clock()        
+        for cluster in clusters:
+            print(len(cluster))
+        print(counter)    
+        print (t2 - t1)
+    else : 
+        np.random.seed(4711)  # for repeatability of this tutorial
+        a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
+        b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[20,])  
+        # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
+        # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
+        # e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[20,])
+        # X2 = np.concatenate((a,b, c, d, e),)
+        X2 = np.concatenate((a,b),)
+        # plt.scatter(X2[:,0], X2[:,1])
+        # plt.show()    
+        a = a.tolist()
+        b = b.tolist()
+        points = X2.tolist()    
         
-    max_iter = 100
-    k = 2
-    centroids = Forgy_initialization(points,k)
-    C, clusters = kMeans(centroids,points,max_iter)
+        points_labels = []
+        for i in a:
+            points_labels.append(('a',i))
+            
+        for j in b:
+            points_labels.append(('b',j))    
+            
+        max_iter = 100
+        k = 2
+        centroids = Forgy_initialization(points,k)
+        C, clusters = kMeans(centroids,points,max_iter)
+        
+        for cluster in clusters:
+            print(len(cluster))
+        # a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
+        b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[20,])  
+        # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
+        # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
+        e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[20,])
+        X2 = np.concatenate((b, e),)
+        # plt.scatter(X2[:,0], X2[:,1])
+        # plt.show()    
     
-    for cluster in clusters:
-        print(len(cluster))
+        points = X2.tolist()    
+    
+            
+        max_iter = 100
+        k = 2
+        centroids = Forgy_initialization(points,k)
+        t1 = time.clock()
+        C, clusters = kMeans(centroids,points,max_iter)
+        t2 = time.clock()        
+        for cluster in clusters:
+            print(len(cluster))
+        print(counter)    
+        print(t2-t1)
 
-    print("end")    
 if __name__ == "__main__":
     main()            
     
