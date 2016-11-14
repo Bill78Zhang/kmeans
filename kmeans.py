@@ -33,7 +33,7 @@ import io2
 from math import sqrt
 import numpy as np
 from matplotlib import pyplot as plt
-
+# To count real number of iterations
 global counter 
 
 counter = 0
@@ -228,11 +228,16 @@ def main():
         from sklearn.datasets import load_digits
         dataset = load_digits()
         data = dataset['data']
-        points = []
-        for i  in range (data.shape[0]):
-            points.append(data[i].tolist())
+        # points = []
+        # for i  in range (data.shape[0]):
+        #     points.append(data[i].tolist())
+            
+        points = data.tolist()
+        labels = dataset['target'].tolist()
         
-        
+
+        dict = {i:labels.count(i) for i in labels}    
+                
         max_iter = 100
         k = 10
         centroids = Forgy_initialization(points,k)
@@ -243,17 +248,20 @@ def main():
             print(len(cluster))
         print(counter)    
         print (t2 - t1)
-    else : 
+    elif arg == "near groups of points" : 
+        
         np.random.seed(4711)  # for repeatability of this tutorial
-        a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
-        b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[20,])  
+        a = np.random.multivariate_normal([1, 0], [[4, 1], [1, 4]], size=[100,])
+        b = np.random.multivariate_normal([0,0], [[4, 1], [1, 4]], size=[100,])  
         # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
         # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
         # e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[20,])
         # X2 = np.concatenate((a,b, c, d, e),)
         X2 = np.concatenate((a,b),)
         # plt.scatter(X2[:,0], X2[:,1])
-        # plt.show()    
+        plt.scatter(a[:,0], a[:,1], color = 'red')
+        plt.scatter(b[:,0], b[:,1], color = 'green')
+        plt.show()    
         a = a.tolist()
         b = b.tolist()
         points = X2.tolist()    
@@ -268,18 +276,26 @@ def main():
         max_iter = 100
         k = 2
         centroids = Forgy_initialization(points,k)
+        t1 = time.clock()  
         C, clusters = kMeans(centroids,points,max_iter)
+        t2 = time.clock()  
         
         for cluster in clusters:
             print(len(cluster))
+        print(counter)    
+        print(t2-t1)
+        
+    elif arg == "separated groups of points" :
         # a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
-        b = np.random.multivariate_normal([0,0], [[3, 1], [1, 4]], size=[20,])  
+        b = np.random.multivariate_normal([0,0], [[4, 1], [1, 4]], size=[100,])  
         # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[20,])
         # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
-        e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[20,])
+        e = np.random.multivariate_normal([0, 100], [[4, 1], [1, 4]], size=[100,])
         X2 = np.concatenate((b, e),)
+        plt.scatter(b[:,0], b[:,1], color = 'red')
+        plt.scatter(e[:,0], e[:,1], color = 'green')
         # plt.scatter(X2[:,0], X2[:,1])
-        # plt.show()    
+        plt.show()    
     
         points = X2.tolist()    
     
