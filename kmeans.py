@@ -151,7 +151,7 @@ def kMeans(ini_centroids, points, max_iter):
         centroids = new_centroids(clusters)
         
         # To verify another condition than number of iterations to know whether situation converged
-        if variations(previous_centroids,centroids,0) :
+        if variations(previous_centroids,centroids) :
 
             break
         
@@ -175,7 +175,7 @@ def Forgy_initialization(points,k):
     random.shuffle(points)
     return points[:k]
         
-def variations(previous_centroids,centroids, epsilon):
+def variations(previous_centroids,centroids, epsilon = 0.001): # Here we choice epsilon handling algorithm's convergence.
     """
     To verify whether clustering converged    
     
@@ -212,7 +212,9 @@ def main():
         # Here we test on IRIS data    
         # io.py is replaced by io2.py, adapted to the format of "iris.data.txt".     
         points = io2.read_data(arg, ignore_last_column = True)
-        max_iter = 100
+        # max_iter = 100
+        # max_iter = 1000
+        max_iter = 10000
         k = 3
         centroids = Forgy_initialization(points,k)
         t1 = time.clock()
