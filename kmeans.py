@@ -183,7 +183,27 @@ def Forgy_initialization(points,k):
 
     """
     random.shuffle(points)
-    return points[:k]
+    print("shuffle")
+    ini_labels = []
+    ini_points = points[:k]
+    for i in range(k):
+        ini_labels.append(ini_points[i][-1])
+    return ini_points, ini_labels
+
+def separated_labels_initialization(points,k):
+
+    ini_points, ini_labels = Forgy_initialization(points,k)
+
+    dict = {i:ini_labels.count(i) for i in ini_labels}    
+    
+#    from itertools import groupby
+#    test_list = [len(list(group)) for key, group in groupby(ini_labels)]
+    
+    if len(dict.keys()) == k:
+        print(dict)
+        return ini_points, ini_labels
+    else:
+        return separated_labels_initialization(points,k)    
 
 def variations(previous_centroids,centroids, epsilon = 0.001): # Here we choice epsilon handling algorithm's convergence.
     """
@@ -226,7 +246,8 @@ def main():
         # max_iter = 1000
         max_iter = 10000
         k = 3 #centroids number
-        centroids = Forgy_initialization(points,k)
+        # centroids, centroids_labels = Forgy_initialization(points,k)
+        centroids, centroids_labels = separated_labels_initialization(points[:-1],k) # To avoid
         t1 = time.clock()
         C, clusters = kMeans(centroids,points,max_iter)
         t2 = time.clock()
@@ -236,8 +257,10 @@ def main():
         s += str(counter) + ";"
         s += str(t2 - t1)
         print(s)
+        print ("INITIAL_LABELS",centroids_labels)
         nb_simples = 0
         for i in range(len(clusters)):
+            print("CLUSTER "+ str(i + 1))
             for j in range(len(clusters[i])):
                 print(clusters[i][j][-1])
                 
