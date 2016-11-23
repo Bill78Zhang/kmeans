@@ -54,12 +54,12 @@ def affectation(centroids, points):
     """
     clusters = []
     for i in range(len(centroids)):
-        clusters.append([centroids[i]])
+        clusters.append([])
 
 
     for point in points:
 
-        distance_to_centroid = distance.EuclideanDistance(point, centroids[0])
+        distance_to_centroid = distance.EuclideanDistance(point[:-1], centroids[0][:-1])
         count = 0
 
         index = 0
@@ -68,7 +68,7 @@ def affectation(centroids, points):
 
 
             distance_min = distance_to_centroid
-            distance_to_centroid = distance.EuclideanDistance(point, centroid)
+            distance_to_centroid = distance.EuclideanDistance(point[:-1], centroid[:-1])
 
             if distance_min > distance_to_centroid:
                 count += 1
@@ -84,7 +84,7 @@ def affectation(centroids, points):
     return clusters[:]
 
 
-def new_centroids(clusters):
+def new_centroids(clusters,dim, previous_centroids):
     """
     To update centroids of clusters after formation of new clusters
 
@@ -96,14 +96,20 @@ def new_centroids(clusters):
 
     """
     centroids = []
+    count = 0
     for cluster in clusters :
-        centroid = new_mean(cluster)
+        if cluster != []:
+            
+            centroid = new_mean(cluster,dim)
+        else:
+            centroid = previous_centroids[count]
+        count += 1    
         centroids.append(centroid)
 
     return centroids[:]
 
 
-def new_mean(cluster):
+def new_mean(cluster, dim):
     """
     To calculate new mean of a cluster
 
@@ -115,14 +121,17 @@ def new_mean(cluster):
 
     """
 
-    dimension = len(cluster[0])
+    
     G = []
-    denominateur = len(cluster)
-    for i in range (dimension):
+    denominateur = len(cluster) 
+    for i in range (dim):
         coord = 0
         for point in cluster:
             coord += point[i]
+            
         G.append(coord/denominateur)
+    s = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'    
+    G.append(s)    
     return G[:]
 
 def kMeans(ini_centroids, points, max_iter):
@@ -143,12 +152,13 @@ def kMeans(ini_centroids, points, max_iter):
 
     """
     centroids = ini_centroids[:]
+    dim = len(points[0])-1
     for i in range (max_iter):
         global counter
         counter += 1
         clusters = affectation(centroids, points)
         previous_centroids = centroids[:]
-        centroids = new_centroids(clusters)
+        centroids = new_centroids(clusters,dim, previous_centroids)
 
         # To verify another condition than number of iterations to know whether situation converged
         if variations(previous_centroids,centroids) :
@@ -195,7 +205,7 @@ def variations(previous_centroids,centroids, epsilon = 0.001): # Here we choice 
 
     var = 0
     for i in range (len(centroids)):
-        var += (distance.EuclideanDistance(centroids[i],previous_centroids[i]))**2
+        var += (distance.EuclideanDistance(centroids[i][:-1],previous_centroids[i][:-1]))**2
     return sqrt(var) < epsilon
 
 
@@ -211,7 +221,7 @@ def main():
 
         # Here we test on IRIS data
         # io.py is replaced by io2.py, adapted to the format of "iris.data.txt".
-        points = io2.read_data(arg, ignore_last_column = True)
+        points = io2.read_data(arg, ignore_last_column = False)
         # max_iter = 100
         # max_iter = 1000
         max_iter = 10000
@@ -220,10 +230,23 @@ def main():
         t1 = time.clock()
         C, clusters = kMeans(centroids,points,max_iter)
         t2 = time.clock()
+        s = ""
         for cluster in clusters:
-            print(len(cluster)) #nombre de points dans chaque cluster
-        print(counter)
-        print(t2 - t1)
+            s += str(len(cluster)) + ";" #nombre de points dans chaque cluster
+        s += str(counter) + ";"
+        s += str(t2 - t1)
+        print(s)
+        nb_simples = 0
+        for i in range(len(clusters)):
+            for j in range(len(clusters[i])):
+                print(clusters[i][j][-1])
+                
+                nb_simples += 1
+#        print(clusters[i][j][-1])
+        print(nb_simples)        
+ 
+#        print(clusters[:][:][:][-1])
+
 
     elif arg == "MNIST":
         # Test on MNIST dataset
@@ -235,10 +258,14 @@ def main():
         #     points.append(data[i].tolist())
 
         points = data.tolist()
+        print(points)
         labels = dataset['target'].tolist()
+        print(labels)
+        for i in range(len(points)):
+            points[i].append(labels[i])
+            
 
 
-        dict = {i:labels.count(i) for i in labels}
 
         max_iter = 100
         k = 10
@@ -246,10 +273,21 @@ def main():
         t1 = time.clock()
         C, clusters = kMeans(centroids,points,max_iter)
         t2 = time.clock()
+        s = ""
         for cluster in clusters:
-            print(len(cluster))
-        print(counter)
-        print (t2 - t1)
+            s += str(len(cluster)) + ";" #nombre de points dans chaque cluster
+        s += str(counter) + ";"
+        s += str(t2 - t1)
+        print(s)
+        nb_simples = 0
+        for i in range(len(clusters)):
+            for j in range(len(clusters[i])):
+                print(clusters[i][j][-1])
+                
+                nb_simples += 1
+#        print(clusters[i][j][-1])
+        print(nb_simples)
+        
     elif arg == "near groups of points" :
 
         np.random.seed(4711)  # for repeatability of this tutorial
@@ -265,9 +303,13 @@ def main():
         plt.scatter(b[:,0], b[:,1], color = 'green')
         plt.show()
         a = a.tolist()
+        for i in range(len(a)):
+            a[i].append('a')
         b = b.tolist()
+        for i in range(len(b)):
+            b[i].append('b')        
         points = X2.tolist()
-
+        points = a + b
         points_labels = []
         for i in a:
             points_labels.append(('a',i))
@@ -282,10 +324,20 @@ def main():
         C, clusters = kMeans(centroids,points,max_iter)
         t2 = time.clock()
 
+        s = ""
         for cluster in clusters:
-            print(len(cluster))
-        print(counter)
-        print(t2-t1)
+            s += str(len(cluster)) + ";" #nombre de points dans chaque cluster
+        s += str(counter) + ";"
+        s += str(t2 - t1)
+        print(s)
+        nb_simples = 0
+        for i in range(len(clusters)):
+            for j in range(len(clusters[i])):
+                print(clusters[i][j][-1])
+                
+                nb_simples += 1
+#        print(clusters[i][j][-1])
+        print(nb_simples)
 
     elif arg == "separated groups of points" :
         # a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
@@ -299,7 +351,16 @@ def main():
         # plt.scatter(X2[:,0], X2[:,1])
         plt.show()
 
-        points = X2.tolist()
+        
+        
+        b = b.tolist()
+        for i in range(len(b)):
+            b[i].append('b')        
+        e = e.tolist()    
+        for i in range(len(e)):
+            e[i].append('e')    
+
+        points = b + e
 
 
         max_iter = 100
@@ -308,10 +369,20 @@ def main():
         t1 = time.clock()
         C, clusters = kMeans(centroids,points,max_iter)
         t2 = time.clock()
+        s = ""
         for cluster in clusters:
-            print(len(cluster))
-        print(counter)
-        print(t2-t1)
+            s += str(len(cluster)) + ";" #nombre de points dans chaque cluster
+        s += str(counter) + ";"
+        s += str(t2 - t1)
+        print(s)
+        nb_simples = 0
+        for i in range(len(clusters)):
+            for j in range(len(clusters[i])):
+                print(clusters[i][j][-1])
+                
+                nb_simples += 1
+#        print(clusters[i][j][-1])
+        print(nb_simples)
 
 if __name__ == "__main__":
     main()
