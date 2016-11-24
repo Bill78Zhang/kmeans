@@ -134,7 +134,7 @@ def new_mean(cluster, dim):
     G.append(s)    
     return G[:]
 
-def kMeans(ini_centroids, points, max_iter):
+def kMeans(ini_centroids, points, max_iter, epsilon = 0.01):
     """
     To applicate k-means algorithm starting from given centroids among given points (data)
 
@@ -146,6 +146,9 @@ def kMeans(ini_centroids, points, max_iter):
 
     @type max_iter: int
     @param max_iter: maximal number of iterations
+    
+    @type epsilon: float
+    @param epsilon: parameter that is compared to the difference between previous_centroids and centroids
 
     @type centroids[:], clusters[:]: tuple of lists
     @return centroids[:], clusters[:]: list containing coordinates of final centroids and list of lists containing information about clusters formed (each list contains points belonging in a same cluster)
@@ -161,7 +164,7 @@ def kMeans(ini_centroids, points, max_iter):
         centroids = new_centroids(clusters,dim, previous_centroids)
 
         # To verify another condition than number of iterations to know whether situation converged
-        if variations(previous_centroids,centroids) :
+        if variations(previous_centroids,centroids, epsilon) :
 
             break
 
@@ -183,7 +186,7 @@ def Forgy_initialization(points,k):
 
     """
     random.shuffle(points)
-    print("shuffle")
+    #print("shuffle")
     ini_labels = []
     ini_points = points[:k]
     for i in range(k):
@@ -200,12 +203,12 @@ def separated_labels_initialization(points,k):
 #    test_list = [len(list(group)) for key, group in groupby(ini_labels)]
     
     if len(dict.keys()) == k:
-        print(dict)
+        #print(dict)
         return ini_points, ini_labels
     else:
         return separated_labels_initialization(points,k)    
 
-def variations(previous_centroids,centroids, epsilon = 0.001): # Here we choice epsilon handling algorithm's convergence.
+def variations(previous_centroids,centroids, epsilon): # Here we choice epsilon handling algorithm's convergence.
     """
     To verify whether clustering converged
 
@@ -246,10 +249,10 @@ def main():
         # max_iter = 1000
         max_iter = 10000
         k = 3 #centroids number
-        # centroids, centroids_labels = Forgy_initialization(points,k)
-        centroids, centroids_labels = separated_labels_initialization(points[:-1],k) # To avoid
+        centroids, centroids_labels = Forgy_initialization(points,k)
+        # centroids, centroids_labels = separated_labels_initialization(points[:-1],k) # To avoid
         t1 = time.clock()
-        C, clusters = kMeans(centroids,points,max_iter)
+        C, clusters = kMeans(centroids,points,max_iter, epsilon = 0.01) # change epsilon
         t2 = time.clock()
         s = ""
         for cluster in clusters:
@@ -257,16 +260,16 @@ def main():
         s += str(counter) + ";"
         s += str(t2 - t1)
         print(s)
-        print ("INITIAL_LABELS",centroids_labels)
+        #print ("INITIAL_LABELS",centroids_labels)
         nb_simples = 0
-        for i in range(len(clusters)):
-            print("CLUSTER "+ str(i + 1))
-            for j in range(len(clusters[i])):
-                print(clusters[i][j][-1])
+        #for i in range(len(clusters)):
+          #  print("CLUSTER "+ str(i + 1))
+         #   for j in range(len(clusters[i])):
+         #       print(clusters[i][j][-1])
                 
-                nb_simples += 1
+                #nb_simples += 1
 #        print(clusters[i][j][-1])
-        print(nb_simples)        
+        #print(nb_simples)        
  
 #        print(clusters[:][:][:][-1])
 
