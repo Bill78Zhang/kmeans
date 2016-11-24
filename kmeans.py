@@ -249,24 +249,42 @@ def main():
         # max_iter = 1000
         max_iter = 10000
         k = 3 #centroids number
-        centroids, centroids_labels = Forgy_initialization(points,k)
-        # centroids, centroids_labels = separated_labels_initialization(points[:-1],k) # To avoid
+        # centroids, centroids_labels = Forgy_initialization(points,k)
+        centroids, centroids_labels = separated_labels_initialization(points[:-1],k) # To avoid
         t1 = time.clock()
-        C, clusters = kMeans(centroids,points,max_iter, epsilon = 0.01) # change epsilon
+        C, clusters = kMeans(centroids,points,max_iter, epsilon = 0.1) # change epsilon
         t2 = time.clock()
         s = ""
         for cluster in clusters:
             s += str(len(cluster)) + ";" #nombre de points dans chaque cluster
         s += str(counter) + ";"
-        s += str(t2 - t1)
-        print(s)
+        s += str(t2 - t1) + ";"
+
         #print ("INITIAL_LABELS",centroids_labels)
         nb_simples = 0
-        #for i in range(len(clusters)):
-          #  print("CLUSTER "+ str(i + 1))
-         #   for j in range(len(clusters[i])):
-         #       print(clusters[i][j][-1])
+        all_labels = separated_labels_initialization(points[:-1],k)[1]
+        partition =dict()
+        for j in range(k):
+                partition[all_labels[j]] = dict()
+
                 
+        for i in range (k):     
+            for j in range(k):
+                partition[all_labels[j]][i] = 0
+            
+        for i in range(len(clusters)):
+            
+          #  print("CLUSTER "+ str(i + 1))
+            for j in range(len(clusters[i])):
+                if clusters[i][j][-1] != 'Iris-virginica':
+                    partition[clusters[i][j][-1]][i] += 1
+                else:
+                    partition['Iris-virginica\n'][i] += 1
+        for key in partition.keys():
+            s += key[:-1] + str(partition[key]) + ";"
+                        
+         #       print(clusters[i][j][-1])
+        print(s+ "end")                
                 #nb_simples += 1
 #        print(clusters[i][j][-1])
         #print(nb_simples)        
@@ -284,18 +302,24 @@ def main():
         #     points.append(data[i].tolist())
 
         points = data.tolist()
-        print(points)
+        
+
         labels = dataset['target'].tolist()
-        print(labels)
+        
+    #    print(labels)
+   #     print(len(labels))
+  #      print(len(points))
+
         for i in range(len(points)):
             points[i].append(labels[i])
-            
+ #       print(points)
+#        print(points[0])
 
 
 
-        max_iter = 100
+        max_iter = 5
         k = 10
-        centroids = Forgy_initialization(points,k)
+        centroids, centroids_labels = Forgy_initialization(points,k)
         t1 = time.clock()
         C, clusters = kMeans(centroids,points,max_iter)
         t2 = time.clock()
@@ -303,16 +327,37 @@ def main():
         for cluster in clusters:
             s += str(len(cluster)) + ";" #nombre de points dans chaque cluster
         s += str(counter) + ";"
-        s += str(t2 - t1)
-        print(s)
+        s += str(t2 - t1) + ";"
+#print ("INITIAL_LABELS",centroids_labels)
         nb_simples = 0
-        for i in range(len(clusters)):
-            for j in range(len(clusters[i])):
-                print(clusters[i][j][-1])
+        all_labels = dataset['target_names'].tolist()
+        partition =dict()
+        for j in range(k):
+                partition[all_labels[j]] = dict()
+
                 
-                nb_simples += 1
+        for i in range (k):     
+            for j in range(k):
+                partition[all_labels[j]][i] = 0
+            
+        for i in range(len(clusters)):
+            
+          #  print("CLUSTER "+ str(i + 1))
+            for j in range(len(clusters[i])):
+
+                partition[clusters[i][j][-1]][i] += 1
+
+        for key in partition.keys():
+            s += str(key) + str(partition[key]) + ";"
+                        
+         #       print(clusters[i][j][-1])
+        print(s+ "end")                
+                #nb_simples += 1
 #        print(clusters[i][j][-1])
-        print(nb_simples)
+        #print(nb_simples)        
+ 
+#        print(clusters[:][:][:][-1])
+
         
     elif arg == "near groups of points" :
 
@@ -325,9 +370,9 @@ def main():
         # X2 = np.concatenate((a,b, c, d, e),)
         X2 = np.concatenate((a,b),)
         # plt.scatter(X2[:,0], X2[:,1])
-        plt.scatter(a[:,0], a[:,1], color = 'red')
-        plt.scatter(b[:,0], b[:,1], color = 'green')
-        plt.show()
+#        plt.scatter(a[:,0], a[:,1], color = 'red')
+#        plt.scatter(b[:,0], b[:,1], color = 'green')
+#        plt.show()
         a = a.tolist()
         for i in range(len(a)):
             a[i].append('a')
@@ -336,35 +381,50 @@ def main():
             b[i].append('b')        
         points = X2.tolist()
         points = a + b
-        points_labels = []
-        for i in a:
-            points_labels.append(('a',i))
-
-        for j in b:
-            points_labels.append(('b',j))
+        
 
         max_iter = 100
         k = 2
-        centroids = Forgy_initialization(points,k)
+        # centroids, centroids_labels = Forgy_initialization(points,k)
+        centroids, centroids_labels = separated_labels_initialization(points[:-1],k) # To avoid
         t1 = time.clock()
-        C, clusters = kMeans(centroids,points,max_iter)
+        C, clusters = kMeans(centroids,points,max_iter, epsilon = 0.001)
         t2 = time.clock()
 
         s = ""
         for cluster in clusters:
             s += str(len(cluster)) + ";" #nombre de points dans chaque cluster
         s += str(counter) + ";"
-        s += str(t2 - t1)
-        print(s)
+        s += str(t2 - t1) + ";"
+#print ("INITIAL_LABELS",centroids_labels)
         nb_simples = 0
-        for i in range(len(clusters)):
-            for j in range(len(clusters[i])):
-                print(clusters[i][j][-1])
-                
-                nb_simples += 1
-#        print(clusters[i][j][-1])
-        print(nb_simples)
+        all_labels = separated_labels_initialization(points[:-1],k)[1]
+        partition =dict()
+        for j in range(k):
+                partition[all_labels[j]] = dict()
 
+                
+        for i in range (k):     
+            for j in range(k):
+                partition[all_labels[j]][i] = 0
+            
+        for i in range(len(clusters)):
+            
+          #  print("CLUSTER "+ str(i + 1))
+            for j in range(len(clusters[i])):
+
+                partition[clusters[i][j][-1]][i] += 1
+
+        for key in partition.keys():
+            s += key + str(partition[key]) + ";"
+                        
+         #       print(clusters[i][j][-1])
+        print(s+ "end")                
+                #nb_simples += 1
+#        print(clusters[i][j][-1])
+        #print(nb_simples)        
+ 
+#        print(clusters[:][:][:][-1])
     elif arg == "separated groups of points" :
         # a = np.random.multivariate_normal([5, 0], [[3, 1], [1, 4]], size=[20,])
         b = np.random.multivariate_normal([0,0], [[4, 1], [1, 4]], size=[100,])
@@ -372,10 +432,10 @@ def main():
         # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[20,])
         e = np.random.multivariate_normal([0, 100], [[4, 1], [1, 4]], size=[100,])
         X2 = np.concatenate((b, e),)
-        plt.scatter(b[:,0], b[:,1], color = 'red')
-        plt.scatter(e[:,0], e[:,1], color = 'green')
+#        plt.scatter(b[:,0], b[:,1], color = 'red')
+#        plt.scatter(e[:,0], e[:,1], color = 'green')
         # plt.scatter(X2[:,0], X2[:,1])
-        plt.show()
+#        plt.show()
 
         
         
@@ -391,7 +451,7 @@ def main():
 
         max_iter = 100
         k = 2
-        centroids = Forgy_initialization(points,k)
+        centroids, centroids_labels = Forgy_initialization(points,k)
         t1 = time.clock()
         C, clusters = kMeans(centroids,points,max_iter)
         t2 = time.clock()
@@ -399,16 +459,36 @@ def main():
         for cluster in clusters:
             s += str(len(cluster)) + ";" #nombre de points dans chaque cluster
         s += str(counter) + ";"
-        s += str(t2 - t1)
-        print(s)
+        s += str(t2 - t1) + ";"
+        #print ("INITIAL_LABELS",centroids_labels)
         nb_simples = 0
-        for i in range(len(clusters)):
-            for j in range(len(clusters[i])):
-                print(clusters[i][j][-1])
+        all_labels = separated_labels_initialization(points[:-1],k)[1]
+        partition =dict()
+        for j in range(k):
+                partition[all_labels[j]] = dict()
+
                 
-                nb_simples += 1
+        for i in range (k):     
+            for j in range(k):
+                partition[all_labels[j]][i] = 0
+            
+        for i in range(len(clusters)):
+            
+          #  print("CLUSTER "+ str(i + 1))
+            for j in range(len(clusters[i])):
+
+                partition[clusters[i][j][-1]][i] += 1
+
+        for key in partition.keys():
+            s += key + str(partition[key]) + ";"
+                        
+         #       print(clusters[i][j][-1])
+        print(s+ "end")                
+                #nb_simples += 1
 #        print(clusters[i][j][-1])
-        print(nb_simples)
+        #print(nb_simples)        
+ 
+#        print(clusters[:][:][:][-1])
 
 if __name__ == "__main__":
     main()

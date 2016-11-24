@@ -10,11 +10,15 @@ To compute distances.
 """
 
 
-from scipy.spatial import distance
+
+from math import sqrt
 
 def EuclideanDistance(x,y):
     """
     Calculate euclidean distance between 2 points in a euclidean space of dimension n.
     x and y are either arrays or tuples.
     """
-    return distance.euclidean(x,y)
+    d = 0
+    for i in range(len(x)):
+        d += (x[i]-y[i])**2
+    return sqrt(d)
